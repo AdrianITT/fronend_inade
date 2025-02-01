@@ -1,0 +1,33 @@
+.main-container {
+  max-width: 1200px; /* Establece un ancho máximo */
+  margin: 0 auto; /* Centra el contenedor horizontalmente */
+  padding: 20px; /* Añade espacio interno alrededor del contenido */
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.note {
+  background-color: #fff9db;
+  border-left: 5px solid #fadb14;
+  padding: 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  grid-column: span 2; /* Se extiende por las dos columnas */
+}
+
+.button-container {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.button-container button {
+  margin-left: 10px;
+}

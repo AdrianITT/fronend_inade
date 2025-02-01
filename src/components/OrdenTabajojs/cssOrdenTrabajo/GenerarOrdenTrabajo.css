@@ -1,0 +1,72 @@
+/* Contenedor principal */
+.orden-trabajo-container {
+  padding: 40px 20px;
+  margin: 0 auto;
+  max-width: 900px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.orden-trabajo-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Información del cliente */
+.orden-trabajo-card {
+  background-color: #e6f7ff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border-left: 5px solid #1890ff;
+}
+
+.orden-trabajo-warning {
+  background-color: #fffbe6;
+  border-left: 5px solid #ffc069;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* Botón para agregar receptor */
+.add-receptor-button {
+  background-color: #52c41a;
+  border-color: #52c41a;
+  color: white;
+  width: 100%;
+}
+
+/* Títulos de sección */
+.section-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #1890ff;
+}
+
+/* Botones del formulario */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 10px;
+}
+
+.register-button {
+  background-color: #52c41a;
+  border-color: #52c41a;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f5222d;
+  border-color: #f5222d;
+  color: white;
+}

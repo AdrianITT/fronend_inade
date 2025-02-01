@@ -1,0 +1,120 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+.contencenter {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center;    /* Centra verticalmente */
+  min-height: 50vh;      /* Usar toda la altura de la ventana */
+  padding: 20px;          /* Espaciado interno */
+  background-color: #ffffff; /* Fondo opcional */
+}
+
+.card-custom {
+  width: 225px; /* Ancho personalizado */
+  height: 200px; /* Alto personalizado */
+  font-size: 10px; /* Texto más grande */
+  background-color: #f0f0f0; /* Fondo gris claro para las tarjetas */
+  border-radius: 8px; /* Bordes redondeados */
+  margin: 10px; /* Espacio entre las tarjetas */
+  transition: transform 0.3s ease;
+}
+.card-custom:hover {
+  transform: scale(0.9); /* Reduce el tamaño al 90% en el hover */
+}
+
+.icon-container {
+  display: flex;
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center;    /* Centrar verticalmente */
+  height: 50%;           /* Tomar toda la altura disponible */
+}
+
+.icon-container svg {
+  font-size: 100px; /* Ajusta el tamaño del ícono */
+  color: #1890ff;
+}
+@media (max-width: 768px) {
+  .icon-container svg {
+    font-size: 40px; /* Reducir el tamaño de los íconos en pantallas pequeñas */
+  }
+}
+
+.badge-container {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  
+  color: white;
+}
+
+.progress-bar-container {
+  margin-bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 1px;
+}
+.custom-card-bar {
+  width: 900px; /* Define un ancho fijo */
+  height: auto; /* Ajusta la altura automáticamente */
+  padding: 5px; /* Controla el relleno interno */
+  margin: 5px; /* Controla el margen alrededor del Card */
+  text-align: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Añadimos sombra suave */
+  border-radius: 10px; /* Bordes redondeados para un diseño más suave */
+  background-color: #ffffff; /* Fondo blanco para destacar los elementos */
+}
+.col-style{
+  margin: 25px;
+}
+.custom-card {
+  height: auto; /* Ajusta la altura automáticamente */
+  margin: 10px; /* Controla el margen alrededor del Card */
+  text-align: center;
+  justify-content: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Añadimos sombra suave */
+  border-radius: 10px; /* Bordes redondeados para un diseño más suave */
+  background-color: #ffffff; /* Fondo blanco para destacar los elementos */
+}
+
+@media (max-width: 375px) {
+  .custom-card {
+    width: 100%; /* Asegurarse de que el card ocupe todo el ancho */
+    padding: 8px;
+  }
+} 
+
+.justi-card{
+  justify-items: center;
+  margin: 20px; 
+}
+
+.text-container {
+  background-color: #f7f7f7; /* Fondo gris suave */
+  padding: 1px; /* Espaciado interno para mayor claridad */
+  margin-top: 10px; /* Espacio adicional arriba */
+  border-radius: 10px; /* Bordes redondeados */
+  font-size: 14px; /* Ajuste del tamaño del texto */
+  font-weight: bold; /* Negrita para destacar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #333333; /* Color oscuro para mejorar la legibilidad */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Agregar sombra ligera */
+}

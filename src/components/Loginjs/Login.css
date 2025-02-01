@@ -1,0 +1,17 @@
+.center-card{
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     background-color: #f9f9f9;
+     margin: 0;
+}
+/* Estilo para el Card */
+.login-card {
+     max-width: 400px; /* Ancho máximo del Card */
+     width: 100%; /* Asegura que el Card sea responsivo */
+     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidad */
+     border-radius: 8px; /* Bordes redondeados */
+     padding: 24px; /* Espaciado interno */
+     background-color: #fff; /* Fondo blanco */
+   }

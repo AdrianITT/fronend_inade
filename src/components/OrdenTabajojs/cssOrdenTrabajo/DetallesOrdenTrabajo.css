@@ -1,0 +1,55 @@
+/* Contenedor principal */
+.container {
+     width: 100%;
+     max-width: 1200px;
+     margin: 0 auto;
+     padding: 20px;
+   }
+   
+   /* Título principal */
+   .page-title {
+     font-size: 24px;
+     font-weight: bold;
+     text-align: center;
+     margin-bottom: 20px;
+   }
+   
+   /* Contenedor para el botón */
+   .button-container {
+     display: flex;
+     justify-content: flex-end;
+     margin-bottom: 16px;
+   }
+   
+   /* Estilo del botón */
+   .action-button {
+     background-color: #13c2c2;
+   }
+   
+   /* Estilo de la tarjeta de información */
+   .info-card {
+     margin-bottom: 16px;
+   }
+   
+   /* Título para conceptos asociados */
+   .concepts-title {
+     font-size: 20px;
+     font-weight: bold;
+     margin-bottom: 15px;
+   }
+   
+   /* Estilo para la tabla de servicios */
+   .services-table {
+     width: 100%;
+     margin-top: 20px;
+   }
+   
+   .services-table .ant-table-thead > tr > th {
+     background-color: #f4f4f4;
+     font-weight: bold;
+   }
+   
+   .services-table .ant-table-tbody > tr:hover {
+     background-color: #f9f9f9;
+   }
+   

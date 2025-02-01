@@ -1,0 +1,207 @@
+.center_content{
+     align-items: center;
+     margin: 30px;
+}
+
+.center-totals-buttons {
+     text-align: center; /* Centra horizontalmente el contenido */
+     margin-top: 20px; /* Espaciado superior */
+   }
+   
+   .totals {
+     margin-bottom: 20px; /* Espaciado inferior */
+     font-size: 16px; /* Ajusta el tamaño de fuente */
+     font-weight: bold; /* Resalta el texto */
+   }
+   
+   .action-buttons {
+     display: inline-flex; /* Coloca los botones uno al lado del otro */
+     gap: 10px; /* Espacio entre botones */
+   }
+   /* General Container */
+.cotizar-container {
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+/* Title */
+.cotizar-title {
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+/* Search Input */
+.cotizar-search {
+  margin-bottom: 16px;
+  max-width: 300px;
+}
+
+/* Buttons Section */
+.cotizar-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.estadisticas-button {
+  background-color: #fadb14;
+  border-color: #d48806;
+  color: black;
+}
+
+.nueva-cotizacion-button {
+  background-color: #1677ff;
+  border-color: #1677ff;
+  color: white;
+}
+
+.ver-proyectos-button {
+  background-color: #52c41a;
+  border-color: #389e0d;
+  color: white;
+}
+
+/* Table */
+.cotizar-table .ant-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cotizar-table .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: bold;
+}
+
+.cotizacion-text {
+  color: green;
+  font-weight: bold;
+}
+
+/* Summary Section */
+.cotizar-summary {
+  margin-top: 16px;
+}
+
+.summary-container {
+  background-color: #e6f7ff;
+  padding: 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-weight: bold;
+}
+
+/*estilo de detalles_Cotizacion*/
+/* Estilo general para el contenedor */
+.cotizacion-detalles-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para el título principal */
+.cotizacion-detalles-container h1 {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo para las tarjetas (Cards) */
+.ant-card {
+  border-radius: 8px;
+}
+
+.ant-card-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Estilo para las filas y columnas */
+.ant-row {
+  margin-bottom: 20px;
+}
+
+.ant-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Espaciado adicional entre elementos */
+.cotizacion-detalles-container p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Estilo para el botón de acciones */
+.ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  border-radius: 4px;
+}
+
+.ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* Estilo para la tabla */
+.ant-table {
+  margin-top: 16px;
+  border-radius: 8px;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+  text-align: center;
+}
+
+.ant-table-tbody > tr > td {
+  text-align: center;
+}
+
+/* Estilo para el modal */
+.ant-modal {
+  border-radius: 8px;
+}
+
+.ant-modal-title {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-input,
+.ant-input-textarea {
+  border-radius: 4px;
+}
+
+/* Estilo para los checkboxes */
+.ant-checkbox-wrapper {
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+/* Estilo para alertas */
+.ant-alert {
+  margin-top: 16px;
+  border-radius: 4px;
+}
+
+/* Ajustes para el dropdown */
+.ant-dropdown {
+  border-radius: 8px;
+}

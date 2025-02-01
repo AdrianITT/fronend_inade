@@ -1,0 +1,50 @@
+.App {
+  text-align: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-height: 100vh; /* Asegura que el contenedor tome al menos la altura completa */
+}
+
+.content-center {
+  max-width: 1200px; /* Limita el ancho máximo para pantallas grandes */
+  margin: 0 auto; /* Centra el contenido horizontalmente */
+}
+
+.card-custom {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+  width: 100%; /* Asegura que ocupe el ancho completo de su contenedor */
+}
+
+.card-custom:hover {
+  transform: translateY(-5px); /* Efecto de hover */
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon-container {
+  font-size: 48px; /* Tamaño de íconos */
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .icon-container {
+    font-size: 36px; /* Ajusta el tamaño de los íconos para pantallas pequeñas */
+  }
+
+  .card-custom {
+    font-size: 14px; /* Ajusta el tamaño del texto */
+  }
+}
+
+@media (max-width: 576px) {
+  .card-custom {
+    font-size: 12px; /* Ajusta el tamaño del texto para pantallas muy pequeñas */
+  }
+
+  .icon-container {
+    font-size: 32px; /* Ajusta aún más el tamaño de los íconos */
+  }
+}
+
+

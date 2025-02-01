@@ -1,0 +1,103 @@
+/* Contenedor general */
+.container-center {
+  max-width: 1200px; /* Define un ancho máximo */
+  margin: 0 auto; /* Centra horizontalmente */
+  padding: 20px; /* Espaciado interno */
+  background-color: #ffffff; /* Fondo blanco */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Sombras suaves */
+  border-radius: 8px; /* Bordes redondeados */
+}
+
+/* Estilo para el título */
+.title-center {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Botones de la parte superior */
+.button-top-container {
+  display: flex;
+  justify-content: flex-end; /* Botón alineado a la derecha */
+  margin-bottom: 20px;
+}
+
+/* Tabla */
+.table-container {
+  margin-top: 20px;
+}
+
+.ant-table-wrapper {
+  border-radius: 8px; /* Bordes redondeados para la tabla */
+  overflow: hidden; /* Oculta los bordes sobresalientes */
+}
+
+/* Botones dentro de las acciones */
+.action-buttons {
+  display: flex;
+  gap: 8px; /* Espaciado entre botones */
+}
+
+.action-button-cotizar {
+  background-color: #52c41a;
+  border-color: #52c41a;
+  color: #fff;
+}
+
+.action-button-edit {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: #fff;
+}
+
+.action-button-delete {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+  color: #fff;
+}
+
+/*estilos de Editarcliente*/
+/* Estilo general del contenedor */
+.editar-cliente-container {
+     max-width: 800px;
+     margin: 0 auto;
+     padding: 40px 20px;
+     background-color: #ffffff;
+   }
+   
+   /* Título */
+   .editar-cliente-title {
+     text-align: center;
+     font-size: 24px;
+     font-weight: bold;
+     margin-bottom: 24px;
+   }
+   .search-bar{
+    justify-items: center;
+    text-align: center;
+   }
+   
+   /* Formulario */
+   .editar-cliente-form .ant-form-item {
+     margin-bottom: 16px;
+   }
+   
+   /* Botones */
+   .editar-cliente-buttons {
+     display: flex;
+     justify-content: center;
+     gap: 16px;
+   }
+   
+   .guardar-button {
+     background-color: #1890ff;
+     border-color: #1890ff;
+     color: white;
+   }
+   
+   .cancelar-button {
+     background-color: #f0f0f0;
+     border-color: #d9d9d9;
+   }
+   

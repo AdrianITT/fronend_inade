@@ -1,0 +1,258 @@
+/* General styles for Servicio component */
+.table-container {
+     padding: 0px;
+     margin: 0 auto;
+     max-width: 1300px; /* Ensures the tables don't touch the edges */
+     background-color: #fffefe;
+     border-radius: 8px; /* Smooth edges for modern look */
+     box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.1); /* Subtle shadow */
+   }
+   
+.table-container .ant-table {
+border-radius: 8px; /* Bordes redondeados para la tabla */
+box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.1); /* Sombra sutil */
+background-color: #fff; /* Fondo blanco para que destaque */
+}
+/* Styles for the header and search input */
+.table-header {
+text-align: center;
+margin-bottom: 16px;
+}
+
+.input-search {
+margin-bottom: 16px;
+max-width: 300px;
+}
+
+.button-add {
+float: right;
+margin-bottom: 16px;
+}
+.action-button-edit {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: #fff;
+}
+
+.action-button-delete {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+  color: #fff;
+}
+
+/* Styles for the modals */
+.modal-content {
+max-width: 800px;
+margin: 0 auto;
+padding: 16px;
+}
+
+.modal-form .ant-form-item {
+margin-bottom: 12px; /* Adjust spacing between form items */
+}
+
+.modal-form .ant-input,
+.modal-form .ant-select {
+width: 100%; /* Ensure inputs and selects stretch to fit */
+}
+
+.modal-buttons {
+display: flex;
+justify-content: flex-end;
+gap: 8px;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+.table-container {
+     padding: 10px;
+}
+
+.input-search {
+     width: 100%;
+     max-width: none;
+}
+
+.button-add {
+     float: none;
+     display: block;
+     width: 100%;
+     text-align: center;
+     margin-bottom: 12px;
+}
+}
+/* estilos de editar servicio*/
+/* Archivo: GenerarOrdenTrabajo.css */
+
+/* Contenedor principal */
+.orden-container {
+     padding: 40px 20px;
+     margin: 0 auto;
+     max-width: 800px; /* Ajusta el ancho máximo según tus necesidades */
+     background-color: #f9f9f9;
+     border-radius: 8px;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   }
+   
+   /* Título principal */
+   .orden-title {
+     text-align: center;
+     font-size: 24px;
+     margin-bottom: 20px;
+     color: #333;
+   }
+   
+   /* Alertas */
+   .orden-alert {
+     margin-bottom: 20px;
+   }
+   
+   .orden-warning {
+     margin-bottom: 20px;
+     font-weight: bold;
+   }
+   
+   /* Información del cliente */
+   .client-info {
+     margin-bottom: 20px;
+     padding: 10px;
+     background-color: #e6f7ff;
+     border-left: 4px solid #1890ff;
+   }
+   
+   .section-title {
+     font-size: 18px;
+     margin-bottom: 10px;
+     font-weight: bold;
+     color: #1890ff;
+   }
+   
+   /* Formulario */
+   .orden-form .ant-form-item {
+     margin-bottom: 16px;
+   }
+   
+   .form-select {
+     width: 100%;
+   }
+   
+   /* Botones del formulario */
+   .form-buttons {
+     display: flex;
+     justify-content: space-between;
+     margin-top: 24px;
+     gap: 10px;
+   }
+   
+   .submit-button {
+     background-color: #52c41a;
+     border-color: #52c41a;
+     color: white;
+   }
+   
+   .cancel-button {
+     background-color: #f0f0f0;
+     border-color: #d9d9d9;
+     color: #595959;
+   }
+   
+   .volver-button {
+     background-color: #f5f5f5;
+     border-color: #d9d9d9;
+     color: #595959;
+   }
+   
+   /* Responsive Design */
+   @media (max-width: 768px) {
+     .orden-container {
+       padding: 20px 10px;
+     }
+   
+     .form-buttons {
+       flex-direction: column;
+       align-items: stretch;
+     }
+   
+     .submit-button,
+     .cancel-button,
+     .volver-button {
+       width: 100%;
+       margin-bottom: 10px;
+     }
+   }
+   /*estilo de Editar servicio*/
+
+   /* Contenedor principal */
+.editar-servicio-container {
+     padding: 40px 20px;
+     margin: 0 auto;
+     max-width: 900px;
+     background-color: #fff;
+     border-radius: 8px;
+     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+   }
+   
+   /* Título */
+   .editar-servicio-title {
+     text-align: center;
+     font-size: 24px;
+     font-weight: bold;
+     margin-bottom: 20px;
+     color: #333;
+   }
+   
+   /* Secciones */
+   .section-title {
+     font-size: 18px;
+     margin-bottom: 10px;
+     font-weight: bold;
+     color: #1890ff;
+   }
+   
+   /* Formulario */
+   .editar-servicio-form .ant-form-item {
+     margin-bottom: 16px;
+   }
+   
+   .form-select {
+     width: 100%;
+   }
+   
+   /* Botones */
+   .form-buttons {
+     display: flex;
+     justify-content: space-between;
+     margin-top: 24px;
+     gap: 10px;
+   }
+   
+   .register-button {
+     background-color: #52c41a;
+     border-color: #52c41a;
+     color: white;
+   }
+   
+   .cancel-button {
+     background-color: #f5222d;
+     border-color: #f5222d;
+     color: white;
+   }
+   
+   /* Responsivo */
+   @media (max-width: 768px) {
+     .editar-servicio-container {
+       padding: 20px 10px;
+     }
+   
+     .form-buttons {
+       flex-direction: column;
+       align-items: stretch;
+     }
+   
+     .register-button,
+     .cancel-button {
+       width: 100%;
+       margin-bottom: 10px;
+     }
+   }
+   

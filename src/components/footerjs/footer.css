@@ -1,0 +1,20 @@
+/* El contenedor principal debe usar Flexbox */
+#layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+}
+
+#main-content {
+  flex: 1; /* Expande el contenido principal para ocupar el espacio disponible */
+}
+
+/* Estilos para el footer */
+.custom-footer {
+  text-align: center;
+  background-color: #eefafd;
+  padding: 10px 0;
+  margin-top: auto; /* Asegura que el footer se mantenga al final */
+}
+
+   

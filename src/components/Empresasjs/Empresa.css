@@ -1,0 +1,28 @@
+.table-center{
+     padding: 5px; /* Espaciado interno entre la tabla y el contenedor */
+     margin: auto; /* Centra la tabla horizontalmente */
+     max-width: 1300px; /* Ancho máximo para evitar que la tabla toque los bordes */
+     background-color: #fff; /* Fondo blanco para que se destaque */
+     border-radius: 8px; /* Bordes redondeados para un diseño más moderno */
+     box-shadow: 0px 4px 6px rgba(250, 250, 250, 0.1); /* Sombras para destacar la tabla */
+}
+.content-center {
+     text-align: center;
+}
+.button-end{
+     display: flex;
+     justify-content: flex-end; /* Mantiene el botón alineado a la derecha */
+     align-items: center; 
+     padding: 20px;
+}
+
+.button-ends {
+     display: flex;
+     justify-content: flex-end; /* Mantiene el botón alineado a la derecha */
+     align-items: center;
+     padding: 20px; /* Espaciado general */
+     margin-right: 10px; /* Añade un margen desde el borde derecho */
+     max-width: 1300px; /* Ancho máximo del contenedor del botón */
+     margin: auto; /* Centra horizontalmente el contenedor del botón */
+   }
+   

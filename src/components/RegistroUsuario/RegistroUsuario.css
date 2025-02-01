@@ -1,0 +1,9 @@
+.container-Registeruser {
+     position: relative;
+     min-height: 100vh;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     background-color: #f4f6f9;
+     padding: 20px;
+   }

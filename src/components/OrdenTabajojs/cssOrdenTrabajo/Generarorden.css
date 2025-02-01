@@ -1,0 +1,66 @@
+/* General Container */
+.generarorden-container {
+     padding: 20px;
+     margin: 0 auto;
+     max-width: 1200px;
+     background-color: #ffffff;
+     border-radius: 8px;
+   }
+   
+   /* Title */
+   .generarorden-title {
+     font-size: 24px;
+     margin-bottom: 16px;
+     text-align: center;
+     color: #333;
+   }
+   
+   /* Search Input */
+   .generarorden-search {
+     margin-bottom: 16px;
+     max-width: 300px;
+   }
+   
+   /* Buttons Section */
+   .generarorden-buttons {
+     display: flex;
+     justify-content: flex-end;
+     margin-bottom: 16px;
+   }
+   
+   .nueva-orden-button {
+     background-color: #1677ff;
+     border-color: #1677ff;
+     color: white;
+   }
+   
+   /* Table */
+   .generarorden-table .ant-table {
+     border-radius: 8px;
+     overflow: hidden;
+   }
+   
+   .generarorden-table .ant-table-thead > tr > th {
+     background-color: #ffffff;
+     font-weight: bold;
+   }
+   
+   .detalles-button {
+     background-color: #1677ff;
+     border-color: #1677ff;
+     color: white;
+   }
+   
+   /* Summary Section */
+   .generarorden-summary {
+     margin-top: 16px;
+   }
+   
+   .summary-container {
+     background-color: #e6f7ff;
+     padding: 8px;
+     border-radius: 4px;
+     display: inline-block;
+     font-weight: bold;
+   }
+   

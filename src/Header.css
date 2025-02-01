@@ -1,0 +1,31 @@
+.header-container {
+  display: flex;
+  justify-content: space-between; /* Separa los elementos a los lados opuestos */
+  align-items: center; /* Alinea verticalmente en el centro */
+  padding: 20px; /* Espaciado alrededor del contenedor */
+  background-color: #f8f9fa; /* Color de fondo opcional */
+}
+
+@media(max-width: 375px){
+  .header-container{
+    flex-direction: column; /* Asegura que el header se apile en pantallas pequeñas */
+    align-items: flex-start;
+  }
+}
+
+.header-logo {
+  display: flex;
+  align-items: center; /* Asegura que el logo esté centrado verticalmente */
+}
+
+.header-button {
+  display: flex;
+  justify-content: flex-end; /* Mantiene el botón alineado a la derecha */
+  align-items: center; /* Alinea verticalmente en el centro */
+}
+
+.logout-button {
+  margin-top: auto; /* Empuja este elemento hacia la parte inferior */
+  text-align:auto; /* Opcional, para centrar el texto */
+  
+}
