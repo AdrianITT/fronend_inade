@@ -9,3 +9,5 @@ const CotizacionServicio_Api= axios.create({
 export const getAllCotizacionServicio=()=>CotizacionServicio_Api.get('/');
 
 export const createCotizacionServicio=(data)=>CotizacionServicio_Api.post('/',data);
+
+export const getCotizacionServiciosByCotizacion =(data)=>CotizacionServicio_Api.get('/',data)

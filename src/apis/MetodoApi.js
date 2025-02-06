@@ -28,3 +28,5 @@ export const deleteMetodo= async (id)=>{
          throw error;
     }
 }
+
+export const getMetodoById = (id) => Metodo_Api.get(`/${id}/`);

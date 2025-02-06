@@ -1,16 +1,21 @@
 import React from "react";
 import { Form, Input, Button, Select } from "antd";
+import { useNavigate } from "react-router-dom"; // <-- Importar useNavigate
 import "./user.css"
 
 const EditarUsuario = () => {
   const { Option } = Select;
 
+  // 1. Obtén la función navigate
+  const navigate = useNavigate();
+
   const handleGuardar = (values) => {
     console.log("Datos guardados:", values);
+    
   };
 
   const handleCancelar = () => {
-    console.log("Edición cancelada");
+    console.log("Edición cancelada");navigate(-1);
   };
 
   return (

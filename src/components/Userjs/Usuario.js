@@ -1,92 +1,149 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { ExclamationCircleOutlined, CloseOutlined, EditOutlined} from "@ant-design/icons";
 import { Table, Input, Button, Modal, Form, Row, Col, Select } from "antd";
 import { Link } from "react-router-dom";
+import { getAllUser,createUser, deleteUser } from "../../apis/UserApi";
 import "../Empresasjs/Empresa.css"
 const { Option } = Select;
 
 
 
-const initialUsers = [
-  {
-    id: "1",
-    username: "developer",
-    email: "ventas1@inade.mx",
-    firstName: "Daniela",
-    lastName: "Mota",
-    phone: "6642131943",
-    role: "admin",
-  },
-  {
-    id: "2",
-    username: "developer1",
-    email: "ventas1@inade.mx",
-    firstName: "Daniela",
-    lastName: "Alvarez Zacarias",
-    phone: "6642131943",
-    role: "muestras",
-  },
-];
+
+
 
 const Usuario=()=>{
-     const [dataSource, setDataSource] = useState(initialUsers);
+     const [dataSource, setDataSource] = useState([]);
      const [isModalOpen, setIsModalOpen] = useState(false);
      const [isModalVisible, setIsModalVisible] = useState(false);
      const [form] = Form.useForm();
+     const [userIdToDelete, setUserIdToDelete] = useState(null);
+     const [filteredData, setFilteredData] = useState([]);
 
-     const showModalAlert = () => {
-      setIsModalVisible(true);
+     // 1. Cargar usuarios desde el backend
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const response = await getAllUser();
+        // Asumiendo response.data es la lista de usuarios
+        setDataSource(response.data);
+        setFilteredData(response.data); // Por defecto, todo se muestra
+      } catch (error) {
+        console.error("Error al cargar los usuarios", error);
+      }
     };
+    loadUsers();
+  }, []);
+
+  const onSearch = (value) => {
+    // Si el usuario no escribió nada, mostramos todo
+    if (!value) {
+      setFilteredData(dataSource);
+      return;
+    }
+    // Conviertes el valor a minúsculas
+    const lowerValue = value.toLowerCase();
   
-    const handleOkAlert = () => {
-      console.log("Eliminado");
+    // Filtras tus datos. Aquí un ejemplo comparando varios campos
+    const filtered = dataSource.filter((user) =>
+      user.username.toLowerCase().includes(lowerValue) ||
+      user.email.toLowerCase().includes(lowerValue) ||
+      (user.firstName && user.firstName.toLowerCase().includes(lowerValue)) ||
+      (user.lastName && user.lastName.toLowerCase().includes(lowerValue))
+    );
+    
+    // Asignas el resultado
+    setFilteredData(filtered);
+  };
+  
+
+  // 2. Mostrar modal para crear usuario
+  const showAddUserModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // 3. Cerrar modal de creación
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  // 4. Crear usuario (llamar a tu API)
+  const handleFinish = async (values) => {
+    try {
+      // Llamar a la API
+      const response = await createUser(values);
+      // Asumiendo response.data es el usuario creado con su ID
+      const newUser = response.data;
+
+      // Actualizar la tabla localmente
+      setDataSource((prev) => [...prev, newUser]);
+
+      // Cerrar modal
+      setIsModalOpen(false);
+      form.resetFields();
+    } catch (error) {
+      console.error("Error al crear usuario", error);
+    }
+  };
+
+  // 5. Confirmar borrado
+  const showModalAlert = (record) => {
+    setUserIdToDelete(record.id);
+    setIsModalVisible(true);
+  };
+
+
+  
+  const handleOkAlert = async () => {
+    try {
+      if (userIdToDelete) {
+        await deleteUser(userIdToDelete); // Llamar a la API
+        setDataSource((prev) => prev.filter((item) => item.id !== userIdToDelete));
+      }
       setIsModalVisible(false);
-    };
+    } catch (error) {
+      console.error("Error al eliminar usuario", error);
+    }
+  };
   
     const handleCancelAlert = () => {
       console.log("Cancelado");
       setIsModalVisible(false);
     };
    
-     const columns = [
-       { title: "Id", dataIndex: "id", key: "id" },
-       { title: "Username", dataIndex: "username", key: "username" },
-       { title: "Correo", dataIndex: "email", key: "email" },
-       { title: "Nombre", dataIndex: "firstName", key: "firstName" },
-       { title: "Apellidos", dataIndex: "lastName", key: "lastName" },
-       { title: "Rol", dataIndex: "role", key: "role" },
-       {
-         title: "Opciones",
-         key: "actions",
-         render: (_, record) => (
-           <>
-           <Link to="/EditarUsuario">
-             <Button type="primary" style={{ marginRight: "8px" }} className="action-button-edit">
+    const columns = [
+      { title: "Id", dataIndex: "id", key: "id" },
+      { title: "Username", dataIndex: "username", key: "username" },
+      { title: "Correo", dataIndex: "email", key: "email" },
+      { title: "Nombre", dataIndex: "firstName", key: "firstName" },
+      { title: "Apellidos", dataIndex: "lastName", key: "lastName" },
+      { title: "Rol", dataIndex: "rol", key: "rol" },
+      {
+        title: "Opciones",
+        key: "actions",
+        render: (_, record) => (
+          <>
+            <Link to={`/EditarUsuario/${record.id}`}>
+              <Button
+                type="primary"
+                style={{ marginRight: "8px" }}
+                className="action-button-edit"
+              >
                 <EditOutlined />
-             </Button></Link>
-             <Button type="danger" onClick={showModalAlert} className="action-button-delete"><CloseOutlined /></Button>
-           </>
-         ),
-       },
-     ];
+              </Button>
+            </Link>
+            <Button
+              type="danger"
+              onClick={() => showModalAlert(record)}
+              className="action-button-delete"
+            >
+              <CloseOutlined />
+            </Button>
+          </>
+        ),
+      },
+    ];
    
-     const showAddUserModal = () => {
-       setIsModalOpen(true);
-     };
-   
-     const handleCancel = () => {
-       setIsModalOpen(false);
-     };
-   
-     const handleFinish = (values) => {
-       const newUser = {
-         id: String(dataSource.length + 1),
-         ...values,
-       };
-       setDataSource([...dataSource, newUser]);
-       setIsModalOpen(false);
-       form.resetFields();
-     };
    
      return(
           <div className="table-container">
@@ -95,6 +152,7 @@ const Usuario=()=>{
               placeholder="Buscar usuario..."
               enterButton="Buscar"
               style={{ maxWidth: "300px" }}
+              onSearch={onSearch}
             /></center>
           <div className="button-end" >
             
@@ -104,7 +162,7 @@ const Usuario=()=>{
           </div>
           <div className="table-wrapper">
           <Table
-            dataSource={dataSource}
+            dataSource={filteredData}
             columns={columns}
             rowKey="id"
             pagination={{

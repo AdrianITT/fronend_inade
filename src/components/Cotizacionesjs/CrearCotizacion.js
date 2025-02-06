@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect,} from "react";
 import "./Crearcotizacion.css";
-import { Form, Input, Button, Row, Col, Select, Checkbox, Divider, message, DatePicker,Card } from "antd";
+import { Form, Input, Button, Row, Col, Select, Checkbox, Divider, message, DatePicker,Card, Modal } from "antd";
 import dayjs from "dayjs";
-import { useParams, useNavigate} from "react-router-dom";
+import { useParams,useNavigate} from "react-router-dom";
 import { getClienteById   } from "../../apis/ClienteApi";
 import {getEmpresaById} from '../../apis/EmpresaApi';
 import { getAllTipoMoneda } from "../../apis/Moneda";
@@ -26,6 +26,9 @@ const RegistroCotizacion = () => {
   const [tipomoneda, setTipoMoneda]=useState([]);
   const [ivaApi, setIva]= useState([]);
   const [fechaCaducidad, setFechaCaducidad] = useState(null);
+  const [nota, setNota] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
 
   const handleFechaSolicitadaChange = (date) => {
     setFechaSolicitada(date);
@@ -144,20 +147,24 @@ const RegistroCotizacion = () => {
 
   const handleSubmit = async () => {
     try {
+      
       // Primero, creamos la cotización
+      console.log(tipomoneda, ivaApi, tipomoneda)
+      
       const cotizacionData = {
         fechaSolicitud: dayjs(fechaSolicitada).format("YYYY-MM-DD"),  // Formato sin hora
         fechaCaducidad: dayjs(fechaCaducidad).format("YYYY-MM-DD"),  // Formato sin hora
-        denominacion: tipomoneda[0].id ,  // Asumiendo que tipomoneda es un solo objeto y no un array
-        iva: ivaApi[0].id ,  // Asumiendo que ivaApi es un solo objeto y no un array
+        denominacion: String(tipomoneda),  // Asumiendo que tipomoneda es un solo objeto y no un array
+        iva: ivaApi,  // Asumiendo que ivaApi es un solo objeto y no un array
         cliente: clienteData.id,
         estado: 1, // Suponiendo que el estado se marca como 1 (activo)
-        notas: clienteData.notas,
+        notas: nota,
       };
-
+      
       const cotizacionResponse = await createCotizacion(cotizacionData); // API para crear cotización
+      setIsModalVisible(true); // <-- Abre el modal
+      
       const cotizacionId = cotizacionResponse.data.id;
-
         // Ahora, enviamos los conceptos
         const conceptosPromises = conceptos.map((concepto) => {
         const conceptoData = {
@@ -167,11 +174,11 @@ const RegistroCotizacion = () => {
         };
         return createCotizacionServicio(conceptoData); // API para crear conceptos
       });
-
+      // Redirige a la lista de cotizaciones
       // Esperamos a que todos los conceptos se creen
       await Promise.all(conceptosPromises);
-      message.success("Cotización creada correctamente");
-      navigate("/cotizar"); // Redirige a la lista de cotizaciones
+      //message.success("Cotización creada correctamente");
+      //navigate("/home"); // Redirige a la lista de cotizaciones
     } catch (error) {
       console.error("Error al crear la cotización", error);
       message.error("Error al crear la cotización");
@@ -230,7 +237,7 @@ const RegistroCotizacion = () => {
             <Form.Item label="Denominación" required
             rules={[{ required: true, message: 'Por favor ingresa Denominacion.' }]}>
               <Select onChange={(value) => setTipoMoneda(value)}>
-                {tipomoneda.map((moneda)=>(
+                {Array.isArray(tipomoneda) && tipomoneda.map((moneda) =>(
                   <Select.Option key={moneda.id}
                   value={moneda.id}>
                     {moneda.nombre}
@@ -243,7 +250,7 @@ const RegistroCotizacion = () => {
             <Form.Item label="Tasa del IVA actual"
             rules={[{ required: true, message: 'Por favor ingresa los IVA.' }]}>
               <Select onChange={(value) => setIva(value)}>
-              {ivaApi.map((ivas)=>(
+              {Array.isArray(ivaApi) && ivaApi.map((ivas)=>(
                   <Select.Option key={ivas.id}
                   value={ivas.id}>
                     {ivas.porcentaje}
@@ -254,8 +261,10 @@ const RegistroCotizacion = () => {
           </Col>
         </Row>
 
-        <Form.Item label="Notas" name="nota">
-          <TextArea placeholder="Notas que aparecerán al final de la cotización (Opcional)" rows={2} />
+        <Form.Item label="notas" name="nota">
+          <TextArea rows={2} value={nota}
+            onChange={(e) => setNota(e.target.value)}
+            placeholder="Notas que aparecerán al final de la cotización (Opcional)"/>
         </Form.Item>
         <Form.Item label="Correos Adicionales">
           <Input placeholder="Ingresa correos adicionales, separados por comas (Opcional)" />
@@ -328,6 +337,19 @@ const RegistroCotizacion = () => {
           </div>
         </div>
       </Form>
+
+      <Modal
+      title="Información"
+      open={isModalVisible}
+      onOk={() => {
+        setIsModalVisible(false);
+         navigate("/cotizar"); // si deseas redirigir
+      }}
+      onCancel={() =>{setIsModalVisible(false); navigate("/cotizar");} }
+      okText="Cerrar"
+    >
+      <p>¡Se creó exitosamente!</p>
+    </Modal>
     </div>
   );
 };

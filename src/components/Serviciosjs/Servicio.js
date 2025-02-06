@@ -145,7 +145,6 @@ const Servicio = () => {
 
   // Mostrar modal para editar un servicio existente
   const showModalServiciosEdit = (service) => {
-    console.log("Service to Edit:", service);
     setServiceToEdit(service);
     formEdit.setFieldsValue(service);
     setIsModalOpenServiciosEdit(true);
@@ -276,9 +275,7 @@ const Servicio = () => {
         return metodo ? metodo.codigo : "No disponible";  // Si el método existe, muestra su código
       },
     },
-    { title: "Descripción", dataIndex: "descripcion", key: "descripcion" },
     { title: "Precio", dataIndex: "precio", key: "precio" },
-    { title: "Acreditado", dataIndex: "acreditado", key: "acreditado" },
     {
       title: "Acción",
       key: "action",

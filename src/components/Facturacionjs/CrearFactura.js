@@ -1,11 +1,15 @@
 import React from "react";
-import { Form, Input, Button, Select } from "antd";
+import { Form, Input, Button, Select, Row, Col } from "antd";
+import { useParams } from "react-router-dom";
 import "./crearfactura.css";
 
 const { TextArea } = Input;
 
 const CrearFactura = () => {
-     const [form] = Form.useForm();
+    const [form] = Form.useForm();
+    const { id } = useParams();
+
+    console.log(id);
   return (
     <div className="factura-container">
       <div className="factura-header">
@@ -27,7 +31,7 @@ const CrearFactura = () => {
         </div>
       </div>
 
-      <Form layout="vertical" className="factura-form"
+      <Form layout="vertical" className="my-factura-form"
       form={form} // Conecta el formulario con la instancia
       initialValues={{
         tipoMoneda: "mxn", // Establece el valor inicial para tipoMoneda
@@ -91,33 +95,37 @@ const CrearFactura = () => {
           </tbody>
         </table>
 
-        <div className="form-additional">
+        <Row gutter={16}>
+          <Col span={14}>
+          <div className="form-additional">
           <Form.Item label="Dirección Fiscal:" name="direccionFiscal" required>
             <Input value="de las ballestas, No.42501, Col. Centro industrial Florida, Tijuana, Baja California, C.P. 42501" disabled />
           </Form.Item>
           <Form.Item label="Comentarios:" name="comentarios">
-            <TextArea rows={2} placeholder="Agrega comentarios adicionales" />
+            <TextArea rows={5} placeholder="Agrega comentarios adicionales" />
           </Form.Item>
         </div>
-
-        <div className="factura-summary">
-          <Form.Item label="Subtotal:" name="subtotal">
-            <Input value="156.00" disabled />
-          </Form.Item>
-          <Form.Item label="Tasa iva:" name="tasaIva" required>
-            <Select>
-              <Select.Option value="8">8%</Select.Option>
-              <Select.Option value="16">16%</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="IVA:" name="iva">
-            <Input value="12.48" disabled />
-          </Form.Item>
-          <Form.Item label="Total:" name="total">
-            <Input value="168.48" disabled />
-          </Form.Item>
-        </div>
-
+          </Col>
+          <Col span={10}>
+            <div className="factura-summary">
+            <Form.Item label="Subtotal:" name="subtotal">
+              <Input value="156.00" disabled />
+            </Form.Item>
+            <Form.Item label="Tasa iva:" name="tasaIva" required>
+              <Select>
+                <Select.Option value="8">8%</Select.Option>
+                <Select.Option value="16">16%</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="IVA:" name="iva">
+              <Input value="12.48" disabled />
+            </Form.Item>
+            <Form.Item label="Total:" name="total">
+              <Input value="168.48" disabled />
+            </Form.Item>
+          </div>
+          </Col>
+        </Row>
         <div className="factura-buttons">
           <Button type="primary" style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}>
             Confirmar datos

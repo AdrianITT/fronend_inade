@@ -6,6 +6,7 @@ import "./Proyecto.css";
 import { getAllCotizacion } from "../../apis/CotizacionApi";
 import {getAllCliente} from "../../apis/ClienteApi";
 import {getAllEmpresas } from "../../apis/EmpresaApi";
+import { getAllOrdenesTrabajo } from "../../apis/OrdenTrabajoApi";
 
 const Proyectos = () => {
   //const [empresas, setEmpresas] = useState([]);
@@ -13,20 +14,25 @@ const Proyectos = () => {
   const [cotizacion, setCotizacionInfo]=useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [ordenesTrabajo, setOrdenesTrabajo] = useState([]);
 
   
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Obtener todas las cotizaciones, empresas y clientes
-        const [cotizacionesResponse, empresasResponse, clientesResponse] = await Promise.all([
+        const [cotizacionesResponse, empresasResponse, clientesResponse, ordenesResponse] = await Promise.all([
           getAllCotizacion(),
           getAllEmpresas(),
           getAllCliente(),
+          getAllOrdenesTrabajo(),
         ]);
 
         // Filtrar cotizaciones con estado >= 2
         const cotizacionesFiltradas = cotizacionesResponse.data.filter(cotizacion => cotizacion.estado >= 2);
+
+        setOrdenesTrabajo(ordenesResponse.data);
+        
 
         // Transformar los datos para que coincidan con la estructura de la tabla
         const formattedData = cotizacionesFiltradas.map((cotizacion) => {
@@ -43,12 +49,27 @@ const Proyectos = () => {
             empresa: empresa ? empresa.nombre : "N/A", // Nombre de la empresa
             contacto: cliente ? `${cliente.nombrePila} ${cliente.apPaterno} ${cliente.apMaterno}` : "N/A", // Nombre completo del cliente
             solicitud: cotizacion.fechaSolicitud || "N/A", // Fecha de solicitud
-            ordenes: [{ id: `250114-0${cotizacion.id}`, estado: "OFF" }], // Datos de ejemplo para las órdenes
+            ordenes: [], // Datos de ejemplo para las órdenes
           };
         });
 
-        setCotizacionInfo(formattedData);
-        setFilteredData(formattedData); // Inicialmente, los datos filtrados son los mismos que los datos originales
+        // 2. Combinar ordenes. 
+        //    ordenesResponse.data es un arreglo de órdenes con {id, estado, cotizacion, ... }
+        const dataWithOrdenes = formattedData.map((row) => {
+          const ordenesAsociadas = ordenesResponse.data.filter(
+            (ord) => ord.cotizacion === row.key
+          );
+          return {
+            ...row,
+            ordenes: ordenesAsociadas
+          };
+        });
+        // 3. Asignar a estado
+        setCotizacionInfo(dataWithOrdenes);
+        setFilteredData(dataWithOrdenes);
+        
+        //setCotizacionInfo(formattedData);
+        //setFilteredData(formattedData); // Inicialmente, los datos filtrados son los mismos que los datos originales
       } catch (error) {
         console.error("Error al cargar los datos", error);
       }
@@ -92,16 +113,22 @@ const Proyectos = () => {
       title: "Ordenes",
       dataIndex: "ordenes",
       key: "ordenes",
-      render: (ordenes) =>
-        ordenes.map((orden, index) => (
-          <div key={index}>
-            <Link to={`/GenerarOrdenTrabajo/${orden.id}`}>
-            • <span style={{ color: "green" }}>
-              ID: {orden.id} Estado: {orden.estado}
-            </span>
-          </Link>
+      render: (ordenesTrabajo) => {
+        if (!ordenesTrabajo || ordenesTrabajo.length === 0) {
+          // Si no hay órdenes
+          return <span>No hay órdenes de trabajo asociadas.</span>;
+        }
+        // Si hay al menos 1 orden
+        return ordenesTrabajo.map((orden) => (
+          <div key={orden.id}>
+            <Link to={`/DetalleOrdenTrabajo/${orden.id}`}>
+              • <span style={{ color: "green" }}>
+                ID:{orden.id} Estado:{orden.estado}
+              </span>
+            </Link>
           </div>
-        )),
+        ));
+      },
     },
     {
       title: "Opciones",

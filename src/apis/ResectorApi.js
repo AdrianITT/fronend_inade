@@ -18,3 +18,5 @@ try{
      throw error;
 }
 }
+
+export const getReceptorByI = async (id) => Receptor_Api.get(`/${id}/`);

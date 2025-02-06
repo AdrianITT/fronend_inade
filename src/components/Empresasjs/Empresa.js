@@ -1,7 +1,7 @@
 import React, { useState, useRef,useEffect,useCallback } from 'react';
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import './Empresa.css';
-import { Button, Input, Space, Table, Modal, Form,Select, Row, Col} from 'antd';
+import { Button, Input, Space, Table, Modal, Form,Select, Row, Col, Result} from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined, EditOutlined, CloseOutlined } from '@ant-design/icons';
 //import { Link } from 'react-router-dom';
@@ -20,6 +20,7 @@ const Empresa = () => {
   const [empresaIdToDelete, setEmpresasIdToDelete]= useState(null);
   const [regimenfiscal, setRegimenFiscal]=useState([]); 
   const [tipomoneda, setTipoMoneda]=useState([]);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // <-- Modal éxito
 
   /*Funciones del modal de edicion de daots */
   const showEditModal = (id) => {
@@ -147,9 +148,13 @@ const Empresa = () => {
       // Si la respuesta es exitosa, actualizar los datos en la tabla
       if (response && response.data) {
         loadgetAllEmpresas(); // Recargar los datos de la tabla
+        // Cerrar modal de creación
+        setIsModalOpen(false); 
+        // Mostrar modal de éxito
+        setIsSuccessModalOpen(true);
       }
 
-      setIsModalOpen(false); // Cerrar el modal
+      //setIsModalOpen(false); // Cerrar el modal
     } catch (error) {
       console.log("Error al validar el formulario", error);
     }
@@ -414,7 +419,7 @@ const Empresa = () => {
                </Form.Item>
                <Form.Item label="organizacion" name="organizacion">
                <Select>
-                    <Select.Option id="1" value={1}>organizacion</Select.Option>
+                    <Select.Option id="5" value={5}>organizacion</Select.Option>
                </Select>
                </Form.Item>
               <Form.Item
@@ -604,6 +609,22 @@ const Empresa = () => {
           </Row>
         </Form>
       </Modal>
+
+      {/* 3. Modal de éxito (mensaje)*/}
+  <Modal
+    title="Empresa creada con éxito"
+    open={isSuccessModalOpen}
+    onOk={() => setIsSuccessModalOpen(false)}
+    onCancel={() => setIsSuccessModalOpen(false)}
+    footer={[
+      <Button key="cerrar" type="primary" onClick={() => setIsSuccessModalOpen(false)}>
+        Cerrar
+      </Button>
+    ]}
+  ><Result status="success"
+  title="¡La empresa se ha creado correctamente!"></Result>
+    
+  </Modal>
 
     </div>
   );

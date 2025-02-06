@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect} from 'react';
-import { Checkbox, Tabs, Table, Input, Form, Button, Modal, Select, Row, Col } from 'antd';
+import { Checkbox, Tabs, Table, Input, Form, Button, Modal, Select, Row, Col, Spin, Result } from 'antd';
 import StickyBox from 'react-sticky-box';
 import './Cliente.css';
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { ExclamationCircleOutlined, EditOutlined, CloseOutlined } from "@ant-design/icons";
 import {getAllCliente, createCliente, deleteCliente} from '../../apis/ClienteApi';
 import {getAllEmpresas,createEmpresas} from '../../apis/EmpresaApi';
@@ -26,19 +26,25 @@ const Cliente = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [cliente, setCliente] = useState([]);
   const [form] = Form.useForm();
+  const navigate= useNavigate();
   const [titulos, setTitulos] = useState([]);
   const [clienteIdToDelete, setClienteIdToDelete] = useState(null); // Para guardar el ID del cliente a eliminar
   const [regimenfiscal, setRegimenFiscal]=useState([]); 
   const [tipomoneda, setTipoMoneda]=useState([]);
  const [empresas, setEmpresas] = useState([]);
+ const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+ const [loading, setLoading] = useState(true); // Estado para controlar la carga
 
   useEffect(() => {
       const fetchRegimenFiscal= async()=>{
         try{
-            const response=await getAllRegimenFiscal();
-            setRegimenFiscal(response.data);
+          setLoading(true);
+          const response=await getAllRegimenFiscal();
+          setRegimenFiscal(response.data);
         }catch(error){
         console.error('Error al cargar los titulos', error);
+        }finally{
+          setLoading(false);
         }
       };
       const fetchTipoMoneda= async()=>{
@@ -47,6 +53,8 @@ const Cliente = () => {
             setTipoMoneda(response.data);
         }catch(error){
         console.error('Error al cargar los titulos', error);
+        }finally{
+          setLoading(false);
         }
       };
       const fetchEmpresa = async()=>{
@@ -55,6 +63,8 @@ const Cliente = () => {
           setEmpresas(response.data);
       }catch(error){
       console.error('Error al cargar los titulos', error);
+      }finally{
+        setLoading(false);
       }
       };
       fetchTipoMoneda();
@@ -128,55 +138,72 @@ useEffect(() => {
     setIsModalOpen(true);
   };
 
-  const handleOk = async () => {
-    try {
-      const data = await form.validateFields();
-      //const values = await form.validateFields();
-
-      // Verificar si el checkbox "Crear empresa" está seleccionado
-      if (createCompany) {
-        const empresaData = {
-        nombre: data.nombre,
-        rfc: data.rfc,
-        regimenFiscal: parseInt(data.regimenFiscal),
-        tipoMoneda: parseInt(data.tipoMoneda),
-        condicionPago: data.condicionPago,
-        calle: data.calle,
-        numero: data.numero,
-        colonia: data.colonia,
-        ciudad: data.ciudad,
-        codigoPostal: data.codigoPostal,
-        estado: data.estado,
-        organizacion: parseInt(data.organizacion),
-        };
-
-        // Llamar a la API para crear la empresa
-        const createEmpresaResponse = await createEmpresas(empresaData);
-        if (createEmpresaResponse && createEmpresaResponse.data) {
-          console.log("Empresa creada correctamente:", createEmpresaResponse.data);
-
-          // Ahora que la empresa se ha creado, podemos asociarla al cliente
-          data.empresa = createEmpresaResponse.data.id; // Asociamos la nueva empresa al cliente
-        }
-      }else {
-        // Si el checkbox no está marcado, usamos la empresa seleccionada
-        data.empresa = data.empresa || null; // Si no se selecciona ninguna empresa, ponemos null
-      }
-      // Ahora crear el cliente, usando la empresa recién creada o seleccionada
-      const createClienteResponse = await createCliente(data);
-      if (createClienteResponse && createClienteResponse.data) {
-        loadgetAllCliente(); // Recargar los datos de los clientes
-      }
-      
-      /*Agregar Titulo */
-      if(createClienteResponse && createClienteResponse.data){
-        loadgetAllCliente();
-      }
-      setIsModalOpen(false);
-    }catch(error){
-      console.log("Error al validar el formulario", error);
+  // 1. Función auxiliar que crea la empresa (si es necesario) y luego el cliente:
+const createClientAndReturnId = async (formValues, createCompany) => {
+  // Primero, si 'createCompany' está marcado, creamos la empresa
+  if (createCompany) {
+    const empresaData = {
+      nombre: formValues.nombre,
+      rfc: formValues.rfc,
+      regimenFiscal: parseInt(formValues.regimenFiscal),
+      tipoMoneda: parseInt(formValues.tipoMoneda),
+      condicionPago: formValues.condicionPago,
+      calle: formValues.calle,
+      numero: formValues.numero,
+      colonia: formValues.colonia,
+      ciudad: formValues.ciudad,
+      codigoPostal: formValues.codigoPostal,
+      estado: formValues.estado,
+      organizacion: parseInt(formValues.organizacion),
+    };
+    const createEmpresaResponse = await createEmpresas(empresaData);
+    if (createEmpresaResponse && createEmpresaResponse.data) {
+      // Asignamos la empresa recién creada al formValues
+      formValues.empresa = createEmpresaResponse.data.id;
     }
-  };
+  }
+
+  // Ahora creamos el cliente
+  const createClienteResponse = await createCliente(formValues);
+  if (createClienteResponse && createClienteResponse.data) {
+    // Retornamos el ID del cliente recién creado
+    return createClienteResponse.data.id;
+  }
+  // En caso de error o sin data, retornamos null
+  return null;
+};
+
+// 2. handleOk (Crear Cliente) sin repetir la lógica
+const handleOk = async () => {
+  try {
+    const formValues = await form.validateFields();
+    const newClientId = await createClientAndReturnId(formValues, createCompany);
+
+    if (newClientId) {
+      loadgetAllCliente(); // Recargar la tabla
+      setIsModalOpen(false); // Cerrar el modal
+    }
+  } catch (error) {
+    console.log("Error al crear cliente", error);
+  }
+};
+
+// 3. handleCreateAndCotizar (Crear y Cotizar) también llama a la función auxiliar
+const handleCreateAndCotizar = async () => {
+  try {
+    const formValues = await form.validateFields();
+    const newClientId = await createClientAndReturnId(formValues, createCompany);
+
+    if (newClientId) {
+      loadgetAllCliente();
+      setIsModalOpen(false);
+      navigate(`/crear_cotizacion/${newClientId}`); // Redirigir a la ruta que desees
+    }
+  } catch (error) {
+    console.log("Error al crear y cotizar", error);
+  }
+};
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -248,9 +275,14 @@ useEffect(() => {
 
   return (
     <div className="container-center">
-      <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
+      
       <h1 className="title-center">Clientes</h1>
-
+      {loading ? ( // Mostrar Spin si loading es true
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <Spin size="large" tip="Cargando clientes..." />
+        </div>
+      ) : (
+        <>
       <div className="search-bar">
         <Input.Search
           placeholder="Buscar proyectos..."
@@ -295,6 +327,9 @@ useEffect(() => {
           ]}
         />
       </div>
+      </>
+    )}
+
       <Modal
         title="Añadir Cliente"
         open={isModalOpen}
@@ -307,7 +342,7 @@ useEffect(() => {
           <Button key="create" type="primary" onClick={handleOk}>
             Crear Cliente
           </Button>,
-          <Button key="create-quote" type="primary" style={{ backgroundColor: '#1890ff' }} onClick={() => { /* Lógica para crear y cotizar */ }}>
+          <Button key="create-quote" type="primary" style={{ backgroundColor: '#1890ff' }} onClick={handleCreateAndCotizar}>
             Crear y Cotizar
           </Button>,
         ]}
@@ -538,6 +573,22 @@ useEffect(() => {
         <p style={{ textAlign: "center", marginBottom: 0 }}>
           ¡No podrás revertir esto!
         </p>
+      </Modal>
+        
+        {/* Modal de Éxito */}
+      <Modal
+        title="Cliente Creado con Éxito"
+        open={isSuccessModalOpen}
+        onOk={() => setIsSuccessModalOpen(false)}
+        onCancel={() => setIsSuccessModalOpen(false)}
+        footer={[
+          <Button key="ok" type="primary" onClick={() => setIsSuccessModalOpen(false)}>
+            Cerrar
+          </Button>
+        ]}
+      >
+        <Result status="success"
+          title="¡El cliente ha sido creado correctamente!"></Result>
       </Modal>
 
     </div>

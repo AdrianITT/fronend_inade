@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Select, Button, Row, Col,Checkbox, Modal, message, Divider, Card} from "antd";
 //import { CloseCircleOutlined  } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./cssOrdenTrabajo/GenerarOrdenTrabajo.css";
 import { getAllCliente } from "../../apis/ClienteApi";
 import { getAllEmpresas } from "../../apis/EmpresaApi";
 import { getAllReceptor, createReceptor } from "../../apis/ResectorApi";
 import { getServicioById } from "../../apis/ServiciosApi";
 import { getCotizacionById } from "../../apis/CotizacionApi";
-
+import { getCotizacionServiciosByCotizacion } from "../../apis/CotizacionServicioApi";
+import { createOrdenTrabajo } from "../../apis/OrdenTrabajoApi";
+import { createOrdenTrabajoServico } from "../../apis/OrdenTabajoServiciosApi";
+const { TextArea } = Input;
 const { Option } = Select;
 
 const GenerarOrdenTrabajo = () => {
@@ -21,11 +24,16 @@ const GenerarOrdenTrabajo = () => {
   const { id } = useParams();
   const [servicios, setServicios] = useState([]);
   const [cotizacionId] = useState(id);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [newOrderId, setNewOrderId] = useState(null);
+  const navigate=useNavigate();
+  
+
   //const [selectedServicios, setSelectedServicios] = useState([]); // Servicios seleccionados por el usuario
 
 
   useEffect(() => {
-    console.log("estee es el id",id);
+    
     const fetchReceptor= async () =>{
       try{
         const response=await getAllReceptor();
@@ -37,14 +45,26 @@ const GenerarOrdenTrabajo = () => {
       try {
         const cotizacionResponse = await getCotizacionById(cotizacionId);  // Obtener la cotización por ID
         const cotizacionServicios = cotizacionResponse.data.servicios; // Servicios de la cotización
+        //const servicioIds = cotizacionServicios.servicios;
+
+         // Paso 2: Obtener los registros de cotizacionServicio para esta cotización
+        const cotizacionServicioResponse = await getCotizacionServiciosByCotizacion(cotizacionId);
+        const cotizacionServicioRecords = cotizacionServicioResponse.data;
         
         const servicios = await Promise.all(
           cotizacionServicios.map(async (servicioId) => {
             const servicioResponse = await getServicioById(servicioId);  // Obtener servicio por ID
-            return servicioResponse.data;
+            const record = cotizacionServicioRecords.find(
+              (r) => r.servicio === servicioId
+            );
+            return {
+              ...servicioResponse.data,           // Datos del servicio (nombre, precio, etc.)
+              cantidad: record ? record.cantidad : 0 // Si no se encuentra, 0 o el valor que prefieras
+            };
           })
         );
         setServicios(servicios);
+        
       } catch (error) {
         console.error("Error al obtener los servicios de la cotización", error);
       }
@@ -95,24 +115,40 @@ const GenerarOrdenTrabajo = () => {
   
 
   const onFinish = async (values) => {
-    console.log("id empres",empresas.id);
-    try{
-      console.log("id empres",empresas.id);
-
-      //const empresaIdManual = empresas.id;  // Asumiendo que ya tienes el ID de la empresa disponible
-
-      const receptorData = {
-        ...values, // Campos del formulario
-        organizacion: 5, // Agregar el ID de la empresa manualmente
+    try {
+      // 1. Crear la orden de trabajo  
+      // Se asume que el receptor seleccionado está en values.receptor
+      const ordenData = {
+        receptor: values.receptor,
+        cotizacion: cotizacionId,
+        estado: 2  // valor por defecto 2
       };
-      
-        // Si es un receptor nuevo, llama a la función de creación
-        const response = await createReceptor(receptorData);  // Asegúrate de tener esta función de crear receptor
-        console.log(response.data);
-      
+      const ordenResponse = await createOrdenTrabajo(ordenData);
+      // Suponemos que el backend retorna el registro creado con su ID (por ejemplo, ordenResponse.data.id)
+      const ordenTrabajoId = ordenResponse.data.id;
 
-    }catch(error){console.error("Error al enviar el formulario", error);}
-    
+      // 2. Insertar los conceptos en la tabla cotizacionServicio  
+      // Por cada concepto, insertar: cantidad, descripción, ordenTrabajoId, y el id del servicio
+      for (const concepto of servicios) {
+        const dataServicio = {
+          cantidad: concepto.cantidad,
+          descripcion: concepto.nota, // Puedes obtener este valor desde el formulario o dejarlo vacío si lo deseas
+          ordenTrabajo: ordenTrabajoId, // ID de la orden creada
+          servicio: concepto.id   // Suponemos que el id del servicio es el mismo que concepto.id
+        };
+        await createOrdenTrabajoServico(dataServicio);
+      }
+
+      setNewOrderId(ordenTrabajoId);
+
+      message.success("Orden de trabajo y servicios creados correctamente");
+      // Opcional: redirigir o limpiar el formulario
+      setIsSuccessModalOpen(true);
+
+    } catch (error) {
+      console.error("Error al crear la orden de trabajo o los servicios", error);
+      message.error("Error al crear la orden de trabajo o los servicios");
+    }
   };
 
 
@@ -152,7 +188,7 @@ const GenerarOrdenTrabajo = () => {
     try {
       const receptorData = {
         ...values, // Campos del formulario
-        organizacion: 5, // Agregar el ID de la empresa manualmente
+        organizacion: cliente.empresa, // Agregar el ID de la empresa manualmente
       };
 
       // Crear el receptor
@@ -337,8 +373,8 @@ const GenerarOrdenTrabajo = () => {
                   <Form.Item label="Servicio" rules={[{ required: true, message: 'Por favor ingresa el servicio.' }]}>
                     <Select
                       placeholder="Selecciona un servicio"
-                      value={concepto.servicio}
-                      onChange={(value) => handleServicioChange(concepto.id, value)}
+                      value={concepto.id}
+                      onChange={(value) => handleServicioChange(concepto.id, "nombreServicio",value)}
                     >
                       {servicios.map((servicio) => (
                         <Select.Option key={servicio.id} value={servicio.id}>
@@ -349,16 +385,29 @@ const GenerarOrdenTrabajo = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="Precio de servicio" rules={[{ required: true, message: 'Por favor ingresa el precio' }]}>
+                  <Form.Item label="cantiadad de servicio" rules={[{ required: true, message: 'Por favor ingresa el precio' }]}>
                     <Input
                       type="number"
                       min="0"
-                      value={concepto.precio}
-                      onChange={(e) => handleInputChange(concepto.id, "precio", parseFloat(e.target.value))}
+                      value={concepto.cantidad}
+                      onChange={(e) => handleInputChange(concepto.id, "cantidad", parseFloat(e.target.value))}
                     />
                   </Form.Item>
                 </Col>
               </Row>
+              <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item label="Notas">
+                  <TextArea
+                  rules={[{ required: true, message: 'Por favor ingresa la nota.' }]}
+                    placeholder="Escribe aquí la nota para este servicio"
+                    value={concepto.nota}
+                    onChange={(e) => handleInputChange(concepto.id, "nota", e.target.value)}
+                    rows={2}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
               <Checkbox onChange={() => handleRemoveConcepto(concepto.id)}>
               Eliminar
               </Checkbox>
@@ -381,7 +430,7 @@ const GenerarOrdenTrabajo = () => {
 
 
       <div>
-      {/* Modal con el formulario */}
+      {/* Modal con el formulario reseptor*/}
       <Modal
         title="Agregar Receptor"
         open={isModalOpen}
@@ -433,6 +482,25 @@ const GenerarOrdenTrabajo = () => {
             <Input placeholder="Celular" />
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Modal de éxito */}
+      <Modal
+        title="Orden Creada"
+        open={isSuccessModalOpen}
+        onOk={() => setIsSuccessModalOpen(false)}
+        onCancel={() => setIsSuccessModalOpen(false)}
+        footer={[
+          <Button
+            key="ok"
+            type="primary"
+            onClick={() => {setIsSuccessModalOpen(false); navigate(`/DetalleOrdenTrabajo/${newOrderId}`);}}
+          >
+            Cerrar
+          </Button>,
+        ]}
+      >
+        <p>¡La orden de trabajo se creó exitosamente!</p>
       </Modal>
     </div>
     </div>

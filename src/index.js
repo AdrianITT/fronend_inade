@@ -104,14 +104,14 @@ const AppRouter = () => {
           <Route path="/detalles_cotizaciones/:id" element={<DetallesCotizacion />} />
           <Route path="/detalles_orden" element={<DetallesOrden />} />
           <Route path="/proyectos" element={<Proyectos />} />
-          <Route path="/DetalleOrdenTrabajo" element={<DetalleOrdenTrabajo />} />
+          <Route path="/DetalleOrdenTrabajo/:orderId" element={<DetalleOrdenTrabajo />} />
           <Route path="/detallesfactura" element={<DetallesFactura />} />
           <Route path="/CotizacionEstadisticas" element={<CotizacionEstadistica />} />
           <Route path="/GenerarOrdenTrabajo/:id" element={<GenerarOrdenTrabajo />} />
           <Route path="/EditarCliente/:clienteId" element={<EditarCliente />} />
           <Route path="/EditarServicio" element={<EditarServicio />} />
-          <Route path="/EditarUsuario" element={<EditarUsuario />} />
-          <Route path="/CrearFactura" element={<CrearFactura/>}/>
+          <Route path="/EditarUsuario/:id" element={<EditarUsuario />} />
+          <Route path="/CrearFactura/:id" element={<CrearFactura/>}/>
           <Route path="/CargaCSD" element={<CargarCSD/>}/>
         </Route>
       </Routes>

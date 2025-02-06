@@ -1,64 +1,112 @@
-import React, { useState } from "react";
-import { Table, Input, Button } from "antd";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { Table, Input, Button, Spin } from "antd"; // Importar Spin
 import { Link } from "react-router-dom";
 import "./cssOrdenTrabajo/Generarorden.css";
+import { getAllOrdenesTrabajo } from "../../apis/OrdenTrabajoApi";
+import { getCotizacionById } from "../../apis/CotizacionApi";
+import { getClienteById } from "../../apis/ClienteApi";
+import { getEstadoById } from "../../apis/EstadoApi";
+import { getReceptorByI } from "../../apis/ResectorApi";
 
 const Generarorden = () => {
-  const initialData = [
-    {
-      key: "1",
-      id: "250114-02",
-      cotizacion: "0002",
-      cliente: "ESCUELA KEMPER URGATE",
-      recibe: "Daniela Alvarez Zacarias",
-      estado: "Pendiente",
-      vigencia: "14 de Febrero de 2025",
-    },
-    {
-      key: "2",
-      id: "250114-01",
-      cotizacion: "0001",
-      cliente: "ESCUELA KEMPER URGATE",
-      recibe: "Daniela Alvarez Zacarias",
-      estado: "Pendiente",
-      vigencia: "13 de Febrero de 2025",
-    },
-  ];
+  const [ordentrabajo, setOrdenTrabajo] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
 
-  const [filteredData, setFilteredData] = useState(initialData); // Estado para filtrar la tabla
-  const [searchText, setSearchText] = useState(""); // Texto de búsqueda
+  useEffect(() => {
+    const fetchOrdenTrabajo = async () => {
+      try {
+        setIsLoading(true); // Activar el estado de carga
+        const response = await getAllOrdenesTrabajo();
+        const ordenes = response.data;
 
-  const columns = [
-    { title: "ID", dataIndex: "id", key: "id" },
-    { title: "Cotización", dataIndex: "cotizacion", key: "cotizacion" },
-    { title: "Cliente", dataIndex: "cliente", key: "cliente" },
-    { title: "Recibe", dataIndex: "recibe", key: "recibe" },
-    { title: "Estado", dataIndex: "estado", key: "estado" },
-    { title: "Vigencia", dataIndex: "vigencia", key: "vigencia" },
-    {
-      title: "Opciones",
-      key: "opciones",
-      render: (_, record) => (
-        <Link to="/DetalleOrdenTrabajo">
-          <Button className="detalles-button">
-            Detalles
-          </Button>
-        </Link>
-      ),
-    },
-  ];
+        const ordenesConCotizacion = await Promise.all(
+          ordenes.map(async (orden) => {
+            const [cotizacionResponse, receptorResponse, estadoResponse] = await Promise.all([
+              getCotizacionById(orden.cotizacion),
+              getReceptorByI(orden.receptor),
+              getEstadoById(orden.estado),
+            ]);
 
-  const handleSearch = (value) => {
+            const clienteResponse = await getClienteById(cotizacionResponse.data.cliente);
+
+            return {
+              ...orden,
+              cotizacionData: { ...cotizacionResponse.data, clienteData: clienteResponse.data },
+              receptorData: receptorResponse.data,
+              estadoData: estadoResponse.data,
+            };
+          })
+        );
+
+        setOrdenTrabajo(ordenesConCotizacion);
+        setFilteredData(ordenesConCotizacion);
+      } catch (error) {
+        console.error('Error al cargar las ordenes: ', error);
+      } finally {
+        setIsLoading(false); // Desactivar el estado de carga
+      }
+    };
+
+    fetchOrdenTrabajo();
+  }, []);
+
+  const handleSearch = useCallback((value) => {
     setSearchText(value);
-    const filtered = initialData.filter((item) =>
+    const filtered = ordentrabajo.filter((item) =>
       Object.values(item).some((field) =>
         String(field).toLowerCase().includes(value.toLowerCase())
       )
     );
     setFilteredData(filtered);
-  };
+  }, [ordentrabajo]);
 
-
+  const columns = useMemo(() => [
+    { title: "ID", dataIndex: "id", key: "id" },
+    { title: "Cotización", dataIndex: "codigo", key: "codigo" },
+    {
+      title: "Cliente",
+      key: "cliente",
+      render: (_, record) => {
+        if (record.cotizacionData && record.cotizacionData.clienteData) {
+          const { nombrePila, apPaterno, apMaterno } = record.cotizacionData.clienteData;
+          return `${nombrePila} ${apPaterno} ${apMaterno}`;
+        }
+        return "";
+      }
+    },
+    {
+      title: "Recibe",
+      key: "receptor",
+      render: (_, record) => {
+        if (record.receptorData) {
+          const { nombrePila, apPaterno, apMaterno } = record.receptorData;
+          return `${nombrePila} ${apPaterno} ${apMaterno}`;
+        }
+        return "";
+      }
+    },
+    {
+      title: "Estado",
+      key: "estado",
+      render: (_, record) => record.estadoData ? record.estadoData.nombre : ""
+    },
+    {
+      title: "Vigencia",
+      key: "vigencia",
+      render: (_, record) => record.cotizacionData ? record.cotizacionData.fechaCaducidad : ""
+    },
+    {
+      title: "Opciones",
+      key: "opciones",
+      render: (_, record) => (
+        <Link to={`/DetalleOrdenTrabajo/${record.id}`}>
+          <Button className="detalles-button">Detalles</Button>
+        </Link>
+      ),
+    },
+  ], []);
 
   return (
     <div className="generarorden-container">
@@ -78,24 +126,33 @@ const Generarorden = () => {
           <Button className="nueva-orden-button">Nueva Orden de Trabajo</Button>
         </Link>
       </div>
-      <Table
-        className="generarorden-table"
-        dataSource={filteredData}
-        columns={columns}
-        bordered
-        pagination={{
-          pageSize: 5,
-          showSizeChanger: true,
-          pageSizeOptions: ["5", "10", "20"],
-        }}
-      />
-      <div className="generarorden-summary">
-        <div className="summary-container">
-          Número de órdenes de trabajo: {filteredData.length}
+      {isLoading ? ( // Mostrar spinner si isLoading es true
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <Spin size="large" tip="Cargando órdenes de trabajo..." />
         </div>
-      </div>
+      ) : (
+        <>
+          <Table
+            rowKey="id"
+            className="generarorden-table"
+            dataSource={filteredData}
+            columns={columns}
+            bordered
+            pagination={{
+              pageSize: 5,
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "20"],
+            }}
+          />
+          <div className="generarorden-summary">
+            <div className="summary-container">
+              Número de órdenes de trabajo: {filteredData.length}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default Generarorden;
+export default React.memo(Generarorden);

@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./index.css";
 import { Card, Col, Row,Badge, Space, Progress} from "antd";
+import { getAllCotizacion } from "./apis/CotizacionApi";
 
 import {
   ReconciliationOutlined,
@@ -14,20 +15,58 @@ import {
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
-
-
-
 const App = () => {
+
+  const [countCotizaciones, setCountCotizaciones] = useState(0);
+  // Para progress bar y textos
+  const [totalCotizaciones, setTotalCotizaciones] = useState(0);
+  const [cotizacionesAceptadas, setCotizacionesAceptadas] = useState(0);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        // Llama a tu API de cotizaciones
+        const response = await getAllCotizacion();
+        const data = response.data || [];
+
+        // Filtrar por estado = 1
+        const estadoUno = data.filter((cot) => cot.estado === 1);
+        setCountCotizaciones(estadoUno.length);
+
+        // 1) Total de cotizaciones
+        const total = data.length;
+        setTotalCotizaciones(total);
+
+        // 2) Cotizaciones con estado >= 2
+        const aceptadas = data.filter((cot) => cot.estado >= 2).length;
+        setCotizacionesAceptadas(aceptadas);
+      } catch (error) {
+        console.error("Error al obtener las cotizaciones", error);
+      }
+    };
+
+    fetchCount();
+  }, []);
+
+  // Calcula el porcentaje normal
+let porcentaje = 0;
+if (totalCotizaciones > 0) {
+  porcentaje = (cotizacionesAceptadas / totalCotizaciones) * 100;
+}
+
+// Si prefieres que sea un número, haz parseFloat:
+const porcentajeFinal = parseFloat(porcentaje.toFixed(2));
+
   return (
     <div className="App">
       <div className="justi-card">{/* Barra de carga */}
         <Card className="custom-card-bar">
       <div className="progress-bar-container">
-          <Progress percent={50} status="active" />
+          <Progress percent={porcentajeFinal} status="active" />
       </div>
       <div className="text-container">
-            <p>Total de cotizaciones: 7</p>
-            <p>Cotizaciones Aceptadas: 4</p>
+          <p>Total de cotizaciones: {totalCotizaciones}</p>
+          <p>Cotizaciones Aceptadas: {cotizacionesAceptadas}</p>
       </div>
       </Card>
       </div>
@@ -72,7 +111,7 @@ const App = () => {
           <div>
             <Link to="/cotizar">
               <Card className="card-custom" title="Cotizar" bordered={false}>
-                <div className="badge-container"><Badge count={25} />
+                <div className="badge-container"><Badge count={countCotizaciones} />
                   </div>
                 <div className="icon-container">
                   <EditOutlined />
