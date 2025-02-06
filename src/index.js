@@ -29,6 +29,7 @@ import CrearFactura from "./components/Facturacionjs/CrearFactura";
 import CargarCSD from "./components/CargaCertificadosDijitales/CargarCSD";
 import HomeAdmin from "./components/VentanasAdmin/AdminHome";
 import RegistroUsuarios from "./components/RegistroUsuario/RegistroUsuarios";
+import ProtectedRoute from "./components/ProtectedRoute"; // Importa el componente de Ruta Protegida
 
 // Hook para cambiar el título de la pestaña
 const usePageTitle = () => {
@@ -81,7 +82,7 @@ const AppRouter = () => {
       <Routes>
         {/* Ruta para el login sin el Layout */}
         <Route path="/" element={<Login />} />
-        <Route path="/RegistroUsuarios" element={<RegistroUsuarios /> }/>
+        <Route path="/RegistroUsuarios" element={<RegistroUsuarios />} />
         
         {/* Rutas envueltas con Layout */}
         <Route path="/" element={
@@ -90,29 +91,29 @@ const AppRouter = () => {
             </PageWrapper>
           }
         >
-          <Route path="/Homeadmin" element={<HomeAdmin/>}/>
-          <Route path="/home" element={<Home />} />
-          <Route path="/empresa" element={<Empresa />} />
-          <Route path="/cliente" element={<Cliente />} />
-          <Route path="/servicio" element={<Servicio />} />
-          <Route path="/cotizar" element={<Cotizar />} />
-          <Route path="/generar_orden" element={<GenerarOrden />} />
-          <Route path="/usuario" element={<Usuario />} />
-          <Route path="/configuracionorganizacion" element={<ConfiguracionOrganizacion />} />
-          <Route path="/factura" element={<Factura />} />
-          <Route path="/crear_cotizacion/:clienteId" element={<CrearCotizacion />} />
-          <Route path="/detalles_cotizaciones/:id" element={<DetallesCotizacion />} />
-          <Route path="/detalles_orden" element={<DetallesOrden />} />
-          <Route path="/proyectos" element={<Proyectos />} />
-          <Route path="/DetalleOrdenTrabajo/:orderId" element={<DetalleOrdenTrabajo />} />
-          <Route path="/detallesfactura" element={<DetallesFactura />} />
-          <Route path="/CotizacionEstadisticas" element={<CotizacionEstadistica />} />
-          <Route path="/GenerarOrdenTrabajo/:id" element={<GenerarOrdenTrabajo />} />
-          <Route path="/EditarCliente/:clienteId" element={<EditarCliente />} />
-          <Route path="/EditarServicio" element={<EditarServicio />} />
-          <Route path="/EditarUsuario/:id" element={<EditarUsuario />} />
-          <Route path="/CrearFactura/:id" element={<CrearFactura/>}/>
-          <Route path="/CargaCSD" element={<CargarCSD/>}/>
+          <Route path="/Homeadmin" element={<ProtectedRoute allowedRoles={['Administrador']}><HomeAdmin /></ProtectedRoute>} />
+          <Route path="/home" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Home /></ProtectedRoute>} />
+          <Route path="/empresa" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Empresa /></ProtectedRoute>} />
+          <Route path="/cliente" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Cliente /></ProtectedRoute>} />
+          <Route path="/servicio" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Servicio /></ProtectedRoute>} />
+          <Route path="/cotizar" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Cotizar /></ProtectedRoute>} />
+          <Route path="/generar_orden" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><GenerarOrden /></ProtectedRoute>} />
+          <Route path="/usuario" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Usuario /></ProtectedRoute>} />
+          <Route path="/configuracionorganizacion" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><ConfiguracionOrganizacion /></ProtectedRoute>} />
+          <Route path="/factura" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Factura /></ProtectedRoute>} />
+          <Route path="/crear_cotizacion/:clienteId" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><CrearCotizacion /></ProtectedRoute>} />
+          <Route path="/detalles_cotizaciones/:id" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><DetallesCotizacion /></ProtectedRoute>} />
+          <Route path="/detalles_orden" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><DetallesOrden /></ProtectedRoute>} />
+          <Route path="/proyectos" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><Proyectos /></ProtectedRoute>} />
+          <Route path="/DetalleOrdenTrabajo/:orderId" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><DetalleOrdenTrabajo /></ProtectedRoute>} />
+          <Route path="/detallesfactura" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><DetallesFactura /></ProtectedRoute>} />
+          <Route path="/CotizacionEstadisticas" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><CotizacionEstadistica /></ProtectedRoute>} />
+          <Route path="/GenerarOrdenTrabajo/:id" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><GenerarOrdenTrabajo /></ProtectedRoute>} />
+          <Route path="/EditarCliente/:clienteId" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><EditarCliente /></ProtectedRoute>} />
+          <Route path="/EditarServicio" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><EditarServicio /></ProtectedRoute>} />
+          <Route path="/EditarUsuario/:id" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><EditarUsuario /></ProtectedRoute>} />
+          <Route path="/CrearFactura/:id" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><CrearFactura /></ProtectedRoute>} />
+          <Route path="/CargaCSD" element={<ProtectedRoute allowedRoles={['UsuarioOrganizacion']}><CargarCSD /></ProtectedRoute>} />
         </Route>
       </Routes>
     </Router>
