@@ -1,32 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { Tabs, Form, Input, Select, Button, Modal,Upload,Card, message } from "antd";
+import { Tabs, Form, Input, Select, Button, Modal,Upload,Card, message} from "antd";
+
 import "./configuracion.css"
-import { UploadOutlined } from '@ant-design/icons';
+import {  UploadOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import { getAllOrganizacion, updateOrganizacion } from "../../apis/organizacionapi";
 import { getAllRegimenFiscal } from "../../apis/Regimenfiscla";
+import { updateInfoOrdenTrabajo,getInfoOrdenTrabajoById, crearInfoOrdenTrabajo } from "../../apis/infoordentrabajoApi";
+import { updateMacaAgua } from "../../apis/MarcaDeAguaApi";
 
 const { TextArea } = Input;
 
+
+
 const ConfiguraciónOrganizacion=()=>{
+  const [fromOrdenTrabajo] = Form.useForm();
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [organizaciones, setOrganizaciones] = useState(null);
   const [regimenfiscal, setRegimenFiscal]=useState([]); 
   const [loading, setLoading] = useState(false); // Para el loading de la actualización
+  const [, setinfOrdenTrabajo]=useState([]);
 
   useEffect(() => {
+    
     const fetchOrganizacion = async () => {
       try {
         const response = await getAllOrganizacion();
         console.log("Organización cargada:", response.data);
         const org = response.data.find(item => item.id === 5); // Usamos el id 5 por defecto
-        
-        
         setOrganizaciones(org);  // Almacenamos los datos de la organización
-        if (org) {
-          form.setFieldsValue(org);
-        }// Establece los valores iniciales del formulario
+        form.setFieldsValue(org);
+        
+        
+        console.log(org.infoOrdenTrabajo);
+        if (org?.infoOrdenTrabajo) {
+          console.log(org.infoOrdenTrabajo);
+          fetchInfOrdenTrabajo(org.infoOrdenTrabajo); // Obtener infoOrdenTrabajo con el ID
+        }
       } catch (error) {
         console.error("Error al obtener las organizaciones", error);
         message.error("Error al obtener la organización.");
@@ -42,10 +53,26 @@ const ConfiguraciónOrganizacion=()=>{
       }
     };
 
+    const fetchInfOrdenTrabajo = async (id) => {
+      try {
+        const response = await getInfoOrdenTrabajoById(id);
+        const ordenTrabajo = response.data;
+
+        if (ordenTrabajo) {
+   
+          setinfOrdenTrabajo(response.data);
+          fromOrdenTrabajo.setFieldsValue(response.data); // Carga los datos en el formulario
+        }
+      } catch (error) {
+        console.error("Error al obtener la información de órdenes de trabajo", error);
+        message.error("Error al obtener la información.");
+      }
+    };
+    
     fetchRegimenFiscal();
     fetchOrganizacion(); // Llamamos a la función para obtener la organización
     setIsModalVisible(true); // Mostrar el modal
-  }, []);
+  }, [form,fromOrdenTrabajo]);
 
   const handleOk = () => {
     setIsModalVisible(false);
@@ -57,6 +84,8 @@ const ConfiguraciónOrganizacion=()=>{
 
   const onFinish = async (values) => {
     console.log("Datos enviados:", values);
+
+    
     
     setLoading(true);
   try {
@@ -82,6 +111,65 @@ const ConfiguraciónOrganizacion=()=>{
   }
   };
 
+  const handleGuardarOrdenTrabajo = async (values) => {
+    try {
+      setLoading(true);
+  
+      let marcaDeAguaId = values.marcaDeAgua; // Si ya hay un ID de marca de agua
+  
+      // Si el usuario subió una nueva marca de agua, primero la subimos y obtenemos su ID
+      if (values.marcaDeAgua instanceof File) {
+        const formData = new FormData();
+        formData.append("file", values.marcaDeAgua);
+  
+        const response = await updateMacaAgua(formData); // Llamada a la API para subir la imagen
+        marcaDeAguaId = response.data.id; // Obtener el ID de la imagen guardada
+      }
+  
+      // Si la organización no tiene una infoOrdenTrabajo, la creamos
+      if (!organizaciones?.infoOrdenTrabajo) {
+        const nuevaOrdenTrabajo = await crearInfoOrdenTrabajo({
+          ...values,
+          marcaDeAgua: marcaDeAguaId,
+        });
+  
+        // Asociamos la nueva orden de trabajo a la organización
+        await updateOrganizacion(organizaciones.id, {
+          ...organizaciones,
+          infoOrdenTrabajo: nuevaOrdenTrabajo.id,
+        });
+  
+        // Actualizamos el estado de la organización con la nueva orden de trabajo
+        setOrganizaciones({
+          ...organizaciones,
+          infoOrdenTrabajo: nuevaOrdenTrabajo.id,
+        });
+  
+        message.success("Orden de trabajo creada y asociada correctamente");
+      } else {
+        console.log("updateInfoOrdenTrabajo:", updateInfoOrdenTrabajo);
+        console.log(organizaciones.infoOrdenTrabajo);
+        // Si ya existe una infoOrdenTrabajo, la actualizamos
+        await updateInfoOrdenTrabajo(organizaciones.infoOrdenTrabajo, {
+          ...values,
+          imagenMarcaAgua: values.imagenMarcaAgua,
+        });
+
+  
+        message.success("Orden de trabajo actualizada correctamente");
+      }
+  
+      // Recargamos la información actualizada
+      const responseOrden = await getInfoOrdenTrabajoById(organizaciones.infoOrdenTrabajo);
+      setinfOrdenTrabajo(responseOrden.data);
+      fromOrdenTrabajo.setFieldsValue(responseOrden.data);
+    } catch (error) {
+      console.error("Error al actualizar la orden de trabajo", error);
+      message.error("Error al actualizar la orden de trabajo.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderOrganizacion = () => (
      <Form layout="vertical"
@@ -268,33 +356,39 @@ const ConfiguraciónOrganizacion=()=>{
    
 
    const renderOrdenesTrabajo = () => (
-     <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-          <h1>Órdenes de Trabajo</h1>
-       <p style={{ color: "red", fontWeight: "bold" }}>
-         No se ha subido ninguna imagen de marca de agua.
-       </p>
-       <Form layout="vertical">
-         <Form.Item label="Nombre formato:" name="nombreFormato" required>
-           <Input placeholder="Ingrese el nombre del formato de orden de trabajo." />
-         </Form.Item>
-         <Form.Item label="Versión:" name="version">
-           <Input placeholder="Ingrese la versión del formato." />
-         </Form.Item>
-         <Form.Item label="Emisión:" name="emision">
-           <Input placeholder="Ingrese la fecha de emisión." />
-         </Form.Item>
-         <Form.Item label="Título documento:" name="tituloDocumento">
-           <Input placeholder="Ingrese el título del documento." />
-         </Form.Item>
-         <Form.Item label="Imagen marca agua:" name="imagenMarcaAgua">
-           <Input type="file" />
-         </Form.Item>
-         <Button type="primary" style={{ width: "100%" }}>
-           Guardar Orden
-         </Button>
-       </Form>
-     </div>
-   );
+    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+      <h1>Órdenes de Trabajo</h1>
+      <p style={{ color: "red", fontWeight: "bold" }}>
+        No se ha subido ninguna imagen de marca de agua.
+      </p>
+      <Form
+        form={fromOrdenTrabajo} // Vincula el formulario con fromOrdenTrabajo
+        layout="vertical"
+        onFinish={handleGuardarOrdenTrabajo}
+      >
+        <Form.Item label="Nombre formato:" name="nombreFormato" required>
+          <Input placeholder="Ingrese el nombre del formato de orden de trabajo." />
+        </Form.Item>
+        <Form.Item label="Versión:" name="version">
+          <Input placeholder="Ingrese la versión del formato." />
+        </Form.Item>
+        <Form.Item label="Emisión:" name="fechaEmision">
+          <Input placeholder="Ingrese la fecha de emisión." />
+        </Form.Item>
+        <Form.Item label="Título documento:" name="tituloDocumento">
+          <Input placeholder="Ingrese el título del documento." />
+        </Form.Item>
+        <Form.Item label="Imagen marca de agua:" name="imagenMarcaAgua">
+          <Upload beforeUpload={() => false}>
+            <Button icon={<UploadOutlined />}>Seleccionar archivo</Button>
+          </Upload>
+        </Form.Item>
+        <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+          Guardar Orden
+        </Button>
+      </Form>
+    </div>
+  );
    
 
    const renderConfiguracionSistema = () => (
